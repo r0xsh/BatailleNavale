@@ -8,15 +8,17 @@ import org.javatuples.Pair;
 
 public class Boat {
 
-	Type type;
+	private boolean sunk = false;
+	
+	private Type type;
 
-	int[] coord_a;
-	int[] coord_b;
+	private int[] coord_a;
+	private int[] coord_b;
 
-	int size;
+	private int size;
 
-	public Map<Pair<Integer, Integer>, State> state = new HashMap<Pair<Integer, Integer>, State>();
-
+	private Map<Pair<Integer, Integer>, State> state = new HashMap<Pair<Integer, Integer>, State>();
+	
 	public Boat(Type type, int[] coord_a, int[] coord_b) {
 		this.type = type;
 		this.coord_a = coord_a;
@@ -59,6 +61,55 @@ public class Boat {
 	 */
 	public boolean isHorizontal() {
 		return this.coord_a[0] == this.coord_b[0];
+	}
+	
+
+	/*
+	 * Check si le bateau est coulé (event)
+	 * @return boolean
+	 */
+	public boolean isSunkEvent() {
+		if (this.sunk)
+			return false;
+		return this.isSunk();
+	}
+	
+	/*
+	 * Check si le bateau est coulé
+	 * @return boolean
+	 */
+	public boolean isSunk() {
+		if (this.sunk)
+			return true;
+		for (State s : this.state.values()) {
+			if (s == State.Ok)
+				return false;
+		}
+		this.sunk = true;
+		return true;
+	}
+	
+	/*
+	 * Retourne le nombre de case du navire
+	 */
+	public int getSize() {
+		return this.size;
+	}
+
+	public Type getType() {
+		return type;
+	}
+	
+	public int[] getCoord_a() {
+		return coord_a;
+	}
+
+	public int[] getCoord_b() {
+		return coord_b;
+	}
+
+	public Map<Pair<Integer, Integer>, State> getState() {
+		return state;
 	}
 
 	public String toString() {

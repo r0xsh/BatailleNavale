@@ -1,5 +1,6 @@
 package me.r0xsh.navale;
 
+import java.io.IOException;
 import java.util.regex.*;
 
 public class Utils {
@@ -25,6 +26,24 @@ public class Utils {
 		}
 
 		return ret;
+	}
+	
+	/*
+	 * Efface la console
+	 */
+	public static void cleanConsole() {
+		
+		String OS = System.getProperty("os.name").toLowerCase();
+		
+		if (OS.indexOf("win") >= 0)
+			try {
+				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+			} catch (InterruptedException | IOException e) {}
+		
+		if ((OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0 )) {
+			System.out.print("\033[H\033[2J");
+			System.out.flush();
+		}
 	}
 
 }

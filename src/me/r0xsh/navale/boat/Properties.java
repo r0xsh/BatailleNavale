@@ -11,6 +11,7 @@ public class Properties {
 		case PorteAvion: size = 4; break;
 		case SousMarin: size = 3; break;
 		case Chasseur: size = 2; break;
+		default : size = 3; break;
 		}
 		return size;
 	}

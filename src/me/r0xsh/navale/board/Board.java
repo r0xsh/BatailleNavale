@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.javatuples.Pair;
 
+import me.r0xsh.navale.Ui;
 import me.r0xsh.navale.boat.*;
 
 public class Board {
@@ -55,13 +56,13 @@ public class Board {
 		key = new Pair<Integer, Integer>(coord[0], coord[1]);
 
 		for (Boat i : this.boats) {
-			if (i.state.containsKey(key)) {
+			if (i.getState().containsKey(key)) {
 				switch (cell) {
 				case Hit:
-					i.state.replace(key, State.Ko);
+					i.getState().replace(key, State.Ko);
 					return;
 				case Boat:
-					i.state.replace(key, State.Ok);
+					i.getState().replace(key, State.Ok);
 					return;
 				default:
 					break;
@@ -85,8 +86,8 @@ public class Board {
 		key = new Pair<Integer, Integer>(coord[0], coord[1]);
 
 		for (Boat i : this.boats) {
-			if (i.state.containsKey(key)) {
-				switch (i.state.get(key)) {
+			if (i.getState().containsKey(key)) {
+				switch (i.getState().get(key)) {
 				case Ko:
 					return Cell.Hit;
 				case Ok:
@@ -115,6 +116,23 @@ public class Board {
 		default:
 			break;
 		}
+		for (Boat b : this.boats) {
+			if (b.isSunkEvent()) {
+				// Fait un truc quand ça a touché !	
+			}
+		}
+	}
+	
+	/**
+	 * Demande si le joueur à perdu la partie
+	 * @return boolean
+	 */
+	public boolean itsLost() {
+		for (Boat b : this.boats) {
+			if (!b.isSunk())
+				return false;
+		}
+		return true;
 	}
 	
 	public String toString() {
@@ -147,17 +165,17 @@ public class Board {
 			r.append("   ║");
 			
 			for (int j = 0; j < Board.BOARD_SIZE; j++) {
-				
+				r.append(' ');
 				switch(this.getCell(new int[] {i, j})) {
-				case Boat: if (hide) r.append(" ~"); else r.append(" B");
+				case Boat: if (hide) r.append(Ui.ANSI_CYAN + "~" + Ui.ANSI_RESET); else r.append(Ui.ANSI_YELLOW + "B" + Ui.ANSI_RESET);
 					break;
-				case Hit: r.append(" #");
+				case Hit: r.append(Ui.ANSI_RED + "#" + Ui.ANSI_RESET);
 					break;
-				case Miss: r.append(" ¤");
+				case Miss: r.append(Ui.ANSI_GREY + "@" + Ui.ANSI_RESET);
 					break;
-				case Waves: r.append(" ~");
+				case Waves: r.append(Ui.ANSI_CYAN + "~" + Ui.ANSI_RESET);
 					break;
-				default: r.append(" ~");
+				default: r.append(Ui.ANSI_CYAN + "~" + Ui.ANSI_RESET);
 					break;
 				
 				}
@@ -167,7 +185,15 @@ public class Board {
 			
 		}
 		
-		r.append("\n     ╚═════════════════════╝");
+		r.append("\n     ");
+		// Affiche la bordure du bas
+				for (int c = 0; c < width + 1; c++)
+					if (c == 0)
+						r.append("╚");
+					else if (c == width)
+						r.append("╝");
+					else
+						r.append("═");
 		
 		return r.toString();
 	}
@@ -178,6 +204,10 @@ public class Board {
 
 	public List<Boat> getBoats() {
 		return boats;
+	}
+
+	public Cell[][] getMap() {
+		return map;
 	}
 
 }

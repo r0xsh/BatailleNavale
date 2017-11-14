@@ -1,7 +1,7 @@
 package me.r0xsh.navale;
 
-import java.io.IOException;
 import java.util.Scanner;
+
 
 import me.r0xsh.navale.AiPlayer.AiPlayer;
 import me.r0xsh.navale.board.*;
@@ -14,43 +14,48 @@ public class App {
 	private Board board_p2;
 
 	App() {
+		
+		
 		this.board_p1 = new Board();
 		this.board_p2 = new Board();
-		
+
+		// Charge le plateau de l'IA
+		AiPlayer bot = new AiPlayer(this.board_p2, this.board_p1);
+
 		// Demande au joueur de placer ses navires
 		for (Type t : Type.values()) {
-			this.addBoat(t, this.board_p1);
+			// Nettoie la console
+			Utils.cleanConsole();
+			// Affiche le plateau
 			System.out.println(this.board_p1.toString(false));
+			// Demande au joueur de placer le navire
+			this.addBoat(t, this.board_p1);
 		}
 		
-		// Charge le plateau de l'IA
-		new AiPlayer(board_p2);
-		
-		while (true) {
-				try {
-					new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-				} catch (InterruptedException | IOException e) {}
-			System.out.println(this.board_p2);
+		// Tant que aucun des deux joueurs à perdu
+		while (!this.board_p1.itsLost() && !this.board_p2.itsLost()) {
+			
+			// Nettoie la console
+			Utils.cleanConsole();
+			
+			// Affiche le plateau
+			System.out.println(this);
+			
+			// Demande au joueur de tirer
 			this.board_p2.hit(this.parseCoord());
+			
+			// Demande à l'IA de tirer
+			this.board_p1.hit(bot.nextHit());
+			
 		}
+		
+		if (this.board_p1.itsLost())
+			System.out.println("Vous avez perdu");
+		else
+			System.out.println("Vous avez gagné !!");
 	}
 	
-//	private void loadPVP() {
-//		System.out.println("Joueur 1 // Positionnez vos navires");
-//		this.board_p1 = new Board();
-//		for (Type t : Type.values()) {
-//			this.addBoat(t, this.board_p1);
-//			System.out.println(this.board_p1);
-//		}
-//		
-//		System.out.println("Joueur 2 // Positionnez vos navires");
-//		this.board_p2 = new Board();
-//		for (Type t : Type.values()) {
-//			this.addBoat(t, this.board_p2);
-//			System.out.println(this.board_p2);
-//		}
-//	}
-
+	
 	/*
 	 * Demande au joueur d'ajouter un bateau sur son plateau
 	 * @param type Type
@@ -61,7 +66,7 @@ public class App {
 
 		do {
 			if (retry) {
-				System.out.println("⚠  Un navire se trouve déjà sur ces coordonnées, réessayez");
+				System.err.println("⚠  Un navire se trouve déjà sur ces coordonnées, réessayez");
 				board.undoLastBoat();
 			}
 			board.addBoat(this.newBoat(type));
@@ -85,7 +90,7 @@ public class App {
 
 		do {
 			if (retry)
-				System.out.println("⚠  Les coordonnées entrées ne correspondent à la taille du navire ou se trouve en dehors du plateau, réessayez");
+				System.err.println("⚠  Les coordonnées entrées ne correspondent à la taille du navire ou se trouve en dehors du plateau, réessayez");
 
 			System.out.println("Entrez les coordonnées du navire '" + type + "' (" + size + " cases)");
 
@@ -106,17 +111,36 @@ public class App {
 	private int[] parseCoord() {
 		int[] ret = { -1, -1 };
 		boolean retry = false;
-
+		
 		do {
 			if (retry)
 				System.out.println("⚠  Les coordonnées entrées n'existent pas, réessayez");
+			
 			System.out.print("> ");
 			ret = Utils.coordDecode(this.s.nextLine());
 			retry = true;
+			
 		} while (!BoardValidator.validCoord(ret));
 		return ret;
 	}
 
+	
+	public String toString() {
+		StringBuilder ret = new StringBuilder();
+		String[] p1 = this.board_p1.toString(false).split("[\n]");
+		String[] p2 = this.board_p2.toString().split("[\n]");
+		
+		for (int i = 0; i < p1.length; i++) {
+			ret.append(p1[i]);
+			ret.append('\t');
+			ret.append(p2[i]);
+			ret.append('\n');
+		}
+		
+		
+		return ret.toString();
+	}
+	
 	public static void main(String[] args) {
 		new App();
 	}

@@ -61,12 +61,12 @@ public class BoatTests {
 		Map<Pair<Integer, Integer>, State> state = new HashMap<Pair<Integer, Integer>, State>();
 		int test = 1;
 
-		for (int i = 0; i < this.boatA.state.size(); ++i) {
+		for (int i = 0; i < this.boatA.getState().size(); ++i) {
 			state.put(new Pair<Integer, Integer>(2, test), State.Ok);
 			++test;
 		}
 
-		assertEquals(state, this.boatA.state);
+		assertEquals(state, this.boatA.getState());
 	}
 
 	@Test
@@ -74,12 +74,12 @@ public class BoatTests {
 		Map<Pair<Integer, Integer>, State> state = new HashMap<Pair<Integer, Integer>, State>();
 		int test = 2;
 
-		for (int i = 0; i < this.boatB.state.size(); ++i) {
+		for (int i = 0; i < this.boatB.getState().size(); ++i) {
 			state.put(new Pair<Integer, Integer>(test, 2), State.Ok);
 			++test;
 		}
 
-		assertEquals(state, this.boatB.state);
+		assertEquals(state, this.boatB.getState());
 	}
 
 }
